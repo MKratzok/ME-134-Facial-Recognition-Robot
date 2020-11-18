@@ -16,7 +16,7 @@ smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
 
 # Start video capture
 cap = cv2.VideoCapture(0)
-cap.set(cv2.CV_CAP_PROP_BUFFERSIZE, 2) # set buffer size to 2 to prevent lag
+cap.set(cv2.CAP_PROP_BUFFERSIZE, 2) # set buffer size to 2 to prevent lag
 
 while 1:
     print('-------------------------')

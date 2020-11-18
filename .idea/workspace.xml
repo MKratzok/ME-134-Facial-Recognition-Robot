@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dc222003-ad37-4fc1-b5d0-ca2c4f0828b1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/FaceDetect.py" beforeDir="false" afterPath="$PROJECT_DIR$/FaceDetect.py" afterDir="false" />
-    </list>
+    <list default="true" id="dc222003-ad37-4fc1-b5d0-ca2c4f0828b1" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
