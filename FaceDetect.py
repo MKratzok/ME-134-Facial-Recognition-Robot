@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import time
-from robot import Robot()
+from robot import Robot
 
 rob = Robot()
 
@@ -20,7 +20,8 @@ smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
 # Start video capture
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_BUFFERSIZE, 1) # set buffer size to prevent lag
-cap.set(cv2.CAP_PROP_FPS,10) # lower FPS to minimize lag
+cap.set(cv2.CAP_PROP_FPS, 10) # lower FPS to minimize lag
+time.sleep(0.25)
 
 prev = time.time()
 
@@ -51,6 +52,10 @@ while 1:
             roi_gray = gray[y:y+h, x:x+w]
             roi_color = img[y:y+h, x:x+w]
 
+            crop = img[x:w, y:h]
+            if not color_detect(crop):
+                rob.crawl()
+
             eyes = eye_cascade.detectMultiScale(roi_gray)
 
             if len(eyes) == 0:
@@ -76,23 +81,49 @@ while 1:
             for (ex,ey,ew,eh) in eyes:
                 cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
 
-            smile = smile_cascade.detectMultiScale(roi_gray)
-
-            if len(smile) == 0:
-                print('-------------------------')
-                print("No Mouth Detected")
-            else:
-                print('-------------------------')
-                print("Mouth Detected")
-
-            for (ex,ey,ew,eh) in smile:
-                cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,0,255),2)
-
-
-    cv2.imshow('img',img)   # This shows the video feed in real time, comment out when running headless
+    # cv2.imshow('img',img)   # This shows the video feed in real time, comment out when running headless
     k = cv2.waitKey(30) & 0xff
     if k == 27: # Break when 'q' is pressed
        break
 
 cap.release()
 cv2.destroyAllWindows()
+
+# def color_detect(c_img):
+#     # Convert the img in
+#     # BGR(RGB color space) to
+#     # HSV(hue-saturation-value)
+#     # color space
+#     hsvFrame = cv2.cvtColor(c_img, cv2.COLOR_BGR2HSV)
+#
+#     # Set range for blue color and
+#     # define mask
+#     blue_lower = np.array([94, 80, 2], np.uint8)
+#     blue_upper = np.array([120, 255, 255], np.uint8)
+#     blue_mask = cv2.inRange(hsvFrame, blue_lower, blue_upper)
+#
+#     # Morphological Transform, Dilation
+#     # for each color and bitwise_and operator
+#     # between img and mask determines
+#     # to detect only that particular color
+#     kernal = np.ones((5, 5), "uint8")
+#
+#     # For blue color
+#     blue_mask = cv2.dilate(blue_mask, kernal)
+#     res_blue = cv2.bitwise_and(c_img, c_img,
+#                                mask=blue_mask)
+#
+#     # Creating contour to track blue color
+#     contours, hierarchy = cv2.findContours(blue_mask,
+#                                            cv2.RETR_TREE,
+#                                            cv2.CHAIN_APPROX_SIMPLE)
+#     for pic, contour in enumerate(contours):
+#         area = cv2.contourArea(contour)
+#         if area > 300:
+#             print("Sees blue")
+#             return True
+#         else:
+#             print("Not blue")
+#             return False
+#
+#     return False
