@@ -3,6 +3,46 @@ import cv2
 import time
 from robot import Robot
 
+
+def color_detect(c_img):
+    # Convert the img in
+    # BGR(RGB color space) to
+    # HSV(hue-saturation-value)
+    # color space
+    hsvFrame = cv2.cvtColor(c_img, cv2.COLOR_BGR2HSV)
+
+    # Set range for blue color and
+    # define mask
+    blue_lower = np.array([94, 80, 2], np.uint8)
+    blue_upper = np.array([120, 255, 255], np.uint8)
+    blue_mask = cv2.inRange(hsvFrame, blue_lower, blue_upper)
+
+    # Morphological Transform, Dilation
+    # for each color and bitwise_and operator
+    # between img and mask determines
+    # to detect only that particular color
+    kernal = np.ones((5, 5), "uint8")
+
+    # For blue color
+    blue_mask = cv2.dilate(blue_mask, kernal)
+    res_blue = cv2.bitwise_and(c_img, c_img,
+                               mask=blue_mask)
+
+    # Creating contour to track blue color
+    contours, hierarchy = cv2.findContours(blue_mask,
+                                           cv2.RETR_TREE,
+                                           cv2.CHAIN_APPROX_SIMPLE)
+    for pic, contour in enumerate(contours):
+        area = cv2.contourArea(contour)
+        if area > 300:
+            print("Sees blue")
+            return True
+        else:
+            print("Not blue")
+            return False
+
+    return False
+
 rob = Robot()
 
 # Good Theory
@@ -52,8 +92,7 @@ while 1:
             roi_gray = gray[y:y+h, x:x+w]
             roi_color = img[y:y+h, x:x+w]
 
-            crop = img[x:w, y:h]
-            if not color_detect(crop):
+            if not color_detect(img[y:y+h, x:x+w]):
                 rob.crawl()
 
             eyes = eye_cascade.detectMultiScale(roi_gray)
@@ -71,10 +110,10 @@ while 1:
                 else:
                     if eyes[0][1] - eyes[0][3]/2 > 10 + eyes[1][1] - eyes[1][3]/2:
                         print('Tilt Left')
-                        rob.turn(-45)
+                        rob.turn(45)
                     elif eyes[1][1] - eyes[1][3]/2 > 10 + eyes[0][1] - eyes[0][3]/2:
                         print('Tilt Right')
-                        rob.turn(45)
+                        rob.turn(-45)
                     else:
                         print('No Tilt')
 
@@ -89,41 +128,4 @@ while 1:
 cap.release()
 cv2.destroyAllWindows()
 
-# def color_detect(c_img):
-#     # Convert the img in
-#     # BGR(RGB color space) to
-#     # HSV(hue-saturation-value)
-#     # color space
-#     hsvFrame = cv2.cvtColor(c_img, cv2.COLOR_BGR2HSV)
-#
-#     # Set range for blue color and
-#     # define mask
-#     blue_lower = np.array([94, 80, 2], np.uint8)
-#     blue_upper = np.array([120, 255, 255], np.uint8)
-#     blue_mask = cv2.inRange(hsvFrame, blue_lower, blue_upper)
-#
-#     # Morphological Transform, Dilation
-#     # for each color and bitwise_and operator
-#     # between img and mask determines
-#     # to detect only that particular color
-#     kernal = np.ones((5, 5), "uint8")
-#
-#     # For blue color
-#     blue_mask = cv2.dilate(blue_mask, kernal)
-#     res_blue = cv2.bitwise_and(c_img, c_img,
-#                                mask=blue_mask)
-#
-#     # Creating contour to track blue color
-#     contours, hierarchy = cv2.findContours(blue_mask,
-#                                            cv2.RETR_TREE,
-#                                            cv2.CHAIN_APPROX_SIMPLE)
-#     for pic, contour in enumerate(contours):
-#         area = cv2.contourArea(contour)
-#         if area > 300:
-#             print("Sees blue")
-#             return True
-#         else:
-#             print("Not blue")
-#             return False
-#
-#     return False
+
