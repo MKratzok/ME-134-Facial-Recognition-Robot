@@ -15,7 +15,6 @@ CURL = [170, 0, -1, 0, 159, -1]
 
 class Robot:
     def __init__(self):
-        self.cam = camera.Camera()
         self.kit = ServoKit(channels=16)
         self._unstick()
         self._set_all(EXTEND)
@@ -131,6 +130,3 @@ class Robot:
             self._unstick()
         else:
             self._stick()
-
-    def sees_blue(self):
-        return self.cam.sees_blue()
